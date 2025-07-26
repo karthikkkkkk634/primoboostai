@@ -273,6 +273,32 @@ export const InputWizard: React.FC<InputWizardProps> = ({
     }
   };
 
+  // Constants for carousel calculation
+  const itemBaseWidth = 96; // Corresponds to Tailwind's w-24 (96px)
+  const itemMarginRight = 16; // Corresponds to Tailwind's space-x-4 (16px)
+  const itemFullWidth = itemBaseWidth + itemMarginRight; // Total width occupied by one item including its right margin
+
+  const visibleIconsCount = 3; // Number of icons visible at once on mobile
+
+  // Calculate the maximum possible scroll left (negative value)
+  // This ensures we don't scroll past the very last set of icons
+  const maxScrollLeft = -(Math.max(0, steps.length - visibleIconsCount) * itemFullWidth);
+
+  let translateX = 0;
+  // Calculate the target translateX to bring the currentStep to the center of the visible window
+  // For 3 visible icons, the center icon is at index 1 (0-indexed).
+  const targetCenterIndex = Math.floor(visibleIconsCount / 2);
+
+  // If currentStep is beyond the initial visible range, calculate shift
+  if (currentStep > targetCenterIndex) {
+    translateX = -(currentStep - targetCenterIndex) * itemFullWidth;
+  }
+
+  // Clamp translateX to ensure it doesn't scroll too far left or right
+  translateX = Math.max(maxScrollLeft, translateX); // Don't scroll beyond the end (most negative value)
+  translateX = Math.min(0, translateX); // Don't scroll beyond the beginning (0 is max right)
+
+
   const currentStepData = steps[currentStep];
 
   return (
@@ -286,39 +312,44 @@ export const InputWizard: React.FC<InputWizardProps> = ({
           </div>
         </div>
 
-        {/* Step Progress Bar */}
-        <div className="flex items-center space-x-4 mb-6">
-          {steps.map((step, index) => (
-            <React.Fragment key={step.id}>
-              <div className="flex flex-col items-center">
-                <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
-                    index < currentStep
-                      ? 'bg-green-500 text-white'
-                      : index === currentStep
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-gray-200 text-gray-500'
-                  }`}
-                >
-                  {index < currentStep ? (
-                    <CheckCircle className="w-5 h-5" />
-                  ) : (
-                    step.icon
-                  )}
+        {/* Step Progress Bar - Carousel Effect */}
+        <div className="relative overflow-hidden w-[320px] mx-auto md:w-auto"> {/* Wrapper for carousel effect */}
+          <div
+            className="flex items-center space-x-4 mb-6 transition-transform duration-300"
+            style={{ transform: `translateX(${translateX}px)` }}
+          >
+            {steps.map((step, index) => (
+              <React.Fragment key={step.id}>
+                <div className="flex flex-col items-center w-24 flex-shrink-0"> {/* Added w-24 and flex-shrink-0 */}
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+                      index < currentStep
+                        ? 'bg-green-500 text-white'
+                        : index === currentStep
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-gray-200 text-gray-500'
+                    }`}
+                  >
+                    {index < currentStep ? (
+                      <CheckCircle className="w-5 h-5" />
+                    ) : (
+                      step.icon
+                    )}
+                  </div>
+                  <span className={`text-xs mt-2 font-medium text-center ${ // Added text-center
+                    index <= currentStep ? 'text-gray-900' : 'text-gray-500'
+                  }`}>
+                    {step.title}
+                  </span>
                 </div>
-                <span className={`text-xs mt-2 font-medium ${
-                  index <= currentStep ? 'text-gray-900' : 'text-gray-500'
-                }`}>
-                  {step.title}
-                </span>
-              </div>
-              {index < steps.length - 1 && (
-                <div className={`flex-1 h-1 rounded-full transition-all duration-300 ${
-                  index < currentStep ? 'bg-green-500' : 'bg-gray-200'
-                }`} />
-              )}
-            </React.Fragment>
-          ))}
+                {index < steps.length - 1 && (
+                  <div className={`flex-1 h-1 rounded-full transition-all duration-300 ${
+                    index < currentStep ? 'bg-green-500' : 'bg-gray-200'
+                  }`} />
+                )}
+              </React.Fragment>
+            ))}
+          </div>
         </div>
       </div>
 
