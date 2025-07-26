@@ -12,10 +12,10 @@ interface HeaderProps {
   showMobileMenu?: boolean;
 }
 
-export const Header: React.FC<HeaderProps> = ({
-  children,
+export const Header: React.FC<HeaderProps> = ({ 
+  children, 
   onMobileMenuToggle,
-  showMobileMenu
+  showMobileMenu 
 }) => {
   const { user, isAuthenticated, logout, isLoading } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -28,7 +28,7 @@ export const Header: React.FC<HeaderProps> = ({
   const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-
+    
     setIsLoggingOut(true);
     try {
       await logout();
@@ -86,15 +86,15 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Logo */}
             <div className="flex items-center space-x-2 sm:space-x-3">
               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl overflow-hidden shadow-lg">
-                <img
-                  src="https://res.cloudinary.com/dlkovvlud/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1751536902/a-modern-logo-design-featuring-primoboos_XhhkS8E_Q5iOwxbAXB4CqQ_HnpCsJn4S1yrhb826jmMDw_nmycqj.jpg"
-                  alt="PrimoBoost AI Logo"
+                <img 
+                  src="https://res.cloudinary.com/dlkovvlud/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1751536902/a-modern-logo-design-featuring-primoboos_XhhkS8E_Q5iOwxbAXB4CqQ_HnpCsJn4S1yrhb826jmMDw_nmycqj.jpg" 
+                  alt="PrimoBoost AI Logo" 
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="hidden xs:block">
                 <h1 className="text-lg sm:text-xl font-bold text-secondary-900">PrimoBoost AI</h1>
-
+               
               </div>
               <div className="xs:hidden">
                 <h1 className="text-base font-bold text-secondary-900">PrimoBoost AI</h1>
@@ -104,7 +104,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Desktop Navigation and Auth */}
             <div className="hidden md:flex items-center space-x-4">
               {children}
-
+              
               {isAuthenticated && user ? (
                 <div className="relative" ref={userMenuRef}>
                   <button
@@ -138,21 +138,21 @@ export const Header: React.FC<HeaderProps> = ({
                           </div>
                         </div>
                       </div>
-
-                      {/* Profile Settings Option */}
-                      <button
-                        onClick={() => {
-                          setShowProfileManagement(true);
-                          setShowUserMenu(false);
-                        }}
-                        className="w-full text-left px-4 py-3 text-sm text-secondary-700 hover:bg-secondary-50 transition-colors flex items-center space-x-3 min-h-touch"
-                      >
-                        <User className="w-4 h-4" />
-                        <span>Profile Settings</span>
-                      </button>
-
+                      
                       {/* Device Management Option */}
                       <button
+                  {/* Profile Settings Option */}
+                  <button
+                    onClick={() => {
+                      setShowProfileManagement(true);
+                      setShowUserMenu(false);
+                    }}
+                    className="w-full text-left px-4 py-3 text-sm text-secondary-700 hover:bg-secondary-50 transition-colors flex items-center space-x-3 min-h-touch"
+                  >
+                    <User className="w-4 h-4" />
+                    <span>Profile Settings</span>
+                  </button>
+                  
                         onClick={() => {
                           setShowDeviceManagement(true);
                           setShowUserMenu(false);
@@ -162,7 +162,7 @@ export const Header: React.FC<HeaderProps> = ({
                         <Shield className="w-4 h-4" />
                         <span>Device & Security</span>
                       </button>
-
+                      
                       <button
                         onClick={handleLogout}
                         disabled={isLoggingOut}
