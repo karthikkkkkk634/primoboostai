@@ -139,20 +139,6 @@ export const Header: React.FC<HeaderProps> = ({
                         </div>
                       </div>
 
-                      {/* Profile Settings Option */}
-                      <button
-                        onClick={() => {
-                          setShowProfileManagement(true);
-                          setShowUserMenu(false);
-                        }}
-                        className="w-full text-left px-4 py-3 text-sm text-secondary-700 hover:bg-secondary-50 transition-colors flex items-center space-x-3 min-h-touch"
-                      >
-                        <User className="w-4 h-4" />
-                        <span>Profile Settings</span>
-                      </button>
-
-                      {/* Device Management Option */}
-                      <button
                         onClick={() => {
                           setShowDeviceManagement(true);
                           setShowUserMenu(false);
