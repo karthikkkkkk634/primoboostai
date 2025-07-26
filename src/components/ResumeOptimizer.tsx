@@ -25,6 +25,7 @@ import { SubscriptionPlans } from './payment/SubscriptionPlans';
 import { SubscriptionStatus } from './payment/SubscriptionStatus';
 
 import { MissingSectionsModal } from './MissingSectionsModal';
+import { InputWizard } from './InputWizard';
 
 import { parseFile } from '../utils/fileParser';
 
@@ -129,7 +130,6 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
   const [loadingSubscription, setLoadingSubscription] = useState(true);
 
   const [currentStep, setCurrentStep] = useState(1);
-
   const [showMissingSectionsModal, setShowMissingSectionsModal] = useState(false);
 
   const [missingSections, setMissingSections] = useState<string[]>([]);
@@ -231,18 +231,6 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
     }
 
   }, [resumeText, currentStep]);
-
-
-
-  useEffect(() => {
-
-    if (jobDescription.trim().length > 0 && currentStep === 2) {
-
-      setCurrentStep(3);
-
-    }
-
-  }, [jobDescription, currentStep]);
 
 
 
@@ -1118,186 +1106,28 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
               </div>
 
 
-
-              <div className={`bg-purple-50 rounded-xl p-2 border flex-none w-24 h-28 flex flex-col items-center justify-center
-
-                          sm:flex-1 sm:p-6 sm:w-auto sm:h-auto ${currentStep === 3 ? 'border-purple-300 ring-2 ring-purple-200' : 'border-gray-200'}`}>
-
-                <div className="bg-purple-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-0 sm:mb-4">
-
-                  <Sparkles className="w-6 h-6 text-purple-600" />
-
-                </div>
-
-                <h3 className="text-lg font-semibold text-gray-900 mb-2 hidden sm:block">Get Optimized</h3>
-
-                <p className="text-sm text-gray-600 hidden sm:block">Download your enhanced, ATS-ready resume</p>
-
-              </div>
-
-            </div> {/* Closing tag for the new wrapping div */}
-
-
-
-            {isAuthenticated && !loadingSubscription && (
-
-              <div className="mb-8">
-
-                <SubscriptionStatus onUpgrade={() => setShowSubscriptionPlans(true)} />
-
-              </div>
-
             )}
 
 
 
             <div className="max-w-7xl mx-auto space-y-6">
-              {currentStep >= 1 && (
-                <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                    <Upload className="w-5 h-5 mr-2 text-blue-600" />
-                    Upload Resume
-                  </h2>
-                  <FileUpload onFileUpload={handleFileUpload} />
-                </div>
-              )}
-
-              {currentStep >= 2 && (
-                <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                    <FileText className="w-5 h-5 mr-2 text-green-600" />
-                    Resume & Job Details
-                  </h2>
-                  <InputSection
-                    resumeText={resumeText}
-                    jobDescription={jobDescription}
-                    onResumeChange={setResumeText}
-                    onJobDescriptionChange={setJobDescription}
-                  />
-                </div>
-              )}
-
-              {currentStep >= 3 && (
-                <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-                      <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                        <User className="w-5 h-5 mr-2 text-purple-600" />
-                        Social Links (Optional)
-                      </h2>
-                      <div className="space-y-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            LinkedIn Profile URL
-                          </label>
-                          <input
-                            type="url"
-                            value={linkedinUrl}
-                            onChange={(e) => setLinkedinUrl(e.target.value)}
-                            placeholder="https://linkedin.com/in/yourprofile"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            GitHub Profile URL
-                          </label>
-                          <input
-                            type="url"
-                            value={githubUrl}
-                            onChange={(e) => setGithubUrl(e.target.value)}
-                            placeholder="https://github.com/yourusername"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-                      <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                        <Briefcase className="w-5 h-5 mr-2 text-orange-600" />
-                        Target Role (Optional)
-                      </h2>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Role Title
-                        </label>
-                        <input
-                          type="text"
-                          value={targetRole}
-                          onChange={(e) => setTargetRole(e.target.value)}
-                          placeholder="e.g., Senior Software Engineer, Product Manager..."
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                        />
-                        <p className="text-xs text-gray-500 mt-2">
-                          Specify the exact role title for more targeted project recommendations
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-                    <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                      <User className="w-5 h-5 mr-2 text-indigo-600" />
-                      Experience Level
-                    </h2>
-                    <div className="grid grid-cols-2 gap-4">
-                      <button
-                        onClick={() => setUserType('fresher')}
-                        className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all cursor-pointer ${
-                          userType === 'fresher'
-                            ? 'border-green-500 bg-green-50 shadow-md'
-                            : 'border-gray-200 hover:border-green-300 hover:bg-green-50'
-                        }`}
-                      >
-                        <User className={`w-6 h-6 mb-2 ${userType === 'fresher' ? 'text-green-600' : 'text-gray-500'}`} />
-                        <span className="font-medium">Fresher/New Graduate</span>
-                        <span className="text-xs text-gray-500 mt-1">Recent graduate or entry-level professional</span>
-                      </button>
-
-                      <button
-                        onClick={() => setUserType('experienced')}
-                        className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all cursor-pointer ${
-                          userType === 'experienced'
-                            ? 'border-blue-500 bg-blue-50 shadow-md'
-                            : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
-                        }`}
-                      >
-                        <Briefcase className={`w-6 h-6 mb-2 ${userType === 'experienced' ? 'text-blue-600' : 'text-gray-500'}`} />
-                        <span className="font-medium">Experienced Professional</span>
-                        <span className="text-xs text-gray-500 mt-1">Professional with 1+ years of work experience</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-                    <button
-                      onClick={isAuthenticated ? handleOptimize : onShowAuth}
-                      disabled={!resumeText.trim() || !jobDescription.trim()}
-                      className={`w-full py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center space-x-3 ${
-                        !resumeText.trim() || !jobDescription.trim()
-                          ? 'bg-gray-400 cursor-not-allowed text-white'
-                          : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-xl hover:shadow-2xl cursor-pointer'
-                      }`}
-                    >
-                      <Sparkles className="w-6 h-6" />
-                      <span>{isAuthenticated ? 'Optimize My Resume' : 'Sign In to Optimize'}</span>
-                      <ArrowRight className="w-5 h-5" />
-                    </button>
-
-                    {!isAuthenticated && (
-                      <p className="text-center text-sm text-gray-500 mt-3">
-                        You need to be signed in to optimize your resume.
-                      </p>
-                    )}
-                  </div>
-                </>
-              )}
-
-
-                
-
-            </div>
+            <InputWizard
+              resumeText={resumeText}
+              setResumeText={setResumeText}
+              jobDescription={jobDescription}
+              setJobDescription={setJobDescription}
+              linkedinUrl={linkedinUrl}
+              setLinkedinUrl={setLinkedinUrl}
+              githubUrl={githubUrl}
+              setGithubUrl={setGithubUrl}
+              targetRole={targetRole}
+              setTargetRole={setTargetRole}
+              userType={userType}
+              setUserType={setUserType}
+              handleOptimize={handleOptimize}
+              isAuthenticated={isAuthenticated}
+              onShowAuth={onShowAuth}
+            />
 
           </>
 
