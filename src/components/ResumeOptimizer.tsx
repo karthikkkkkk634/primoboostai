@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 // CORRECTED IMPORT STATEMENT:
 // This line now includes all previously imported Lucide icons PLUS ArrowLeft, FileText, BarChart3, SwitchHorizontal, and Sparkles.
-import { FileText, Sparkles, Download, TrendingUp, Target, Award, User, Briefcase, AlertCircle, CheckCircle, Loader2, RefreshCw, Zap, Plus, Eye, EyeOff, Crown, Calendar, Clock, Users, Star, ArrowRight, Shield, Settings, LogOut, Menu, X, Upload, BarChart3, Lightbulb, ArrowLeft, SwitchHorizontal } from 'lucide-react';
+import { FileText, Sparkles, Download, TrendingUp, Target, Award, User, Briefcase, AlertCircle, CheckCircle, Loader2, RefreshCw, Zap, Plus, Eye, EyeOff, Crown, Calendar, Clock, Users, Star, ArrowRight, Shield, Settings, LogOut, Menu, X, Upload, BarChart3, Lightbulb, ArrowLeft, StretchHorizontal as SwitchHorizontal } from 'lucide-react';
 
 import { FileUpload } from './FileUpload';
 
