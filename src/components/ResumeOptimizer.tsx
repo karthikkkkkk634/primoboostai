@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 // CORRECTED IMPORT STATEMENT:
 // This line now includes all previously imported Lucide icons PLUS ArrowLeft, FileText, BarChart3, SwitchHorizontal, and Sparkles.
-import { FileText, Sparkles, Download, TrendingUp, Target, Award, User, Briefcase, AlertCircle, CheckCircle, Loader2, RefreshCw, Zap, Plus, Eye, EyeOff, Crown, Calendar, Clock, Users, Star, ArrowRight, Shield, Settings, LogOut, Menu, X, Upload, BarChart3, Lightbulb, ArrowLeft, SwitchHorizontal } from 'lucide-react';
+import { FileText, Sparkles, Download, TrendingUp, Target, Award, User, Briefcase, AlertCircle, CheckCircle, Loader2, RefreshCw, Zap, Plus, Eye, EyeOff, Crown, Calendar, Clock, Users, Star, ArrowRight, Shield, Settings, LogOut, Menu, X, Upload, BarChart3, Lightbulb, ArrowLeft, StretchHorizontal as SwitchHorizontal } from 'lucide-react';
 
 import { FileUpload } from './FileUpload';
 
@@ -948,6 +948,7 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
 
           {/* Detailed Score Analysis from ResumeOptimizer */}
 
+         
 
           <ComprehensiveAnalysis
 
@@ -1024,7 +1025,7 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 pb-16">
 
       {/* Debug Buttons */}
-
+   
       {/* End Debug Buttons */}
 
       <div className="w-90vh max-w-7xl mx-auto px-0 sm:px-6 lg:px-8 py-8">
@@ -1069,34 +1070,59 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
             </div>
 
 
-            {/* Removed the redundant step icons div */}
-            {/* <div className="grid grid-cols-3 gap-4 mb-8">
+
+            <div className="grid grid-cols-3 gap-4 mb-8"> {/* Added this wrapping div */}
+
               <div className={`bg-blue-50 rounded-xl p-2 border flex-none w-24 h-28 flex flex-col items-center justify-center
+
                           sm:flex-1 sm:p-6 sm:w-auto sm:h-auto ${currentStep === 1 ? 'border-blue-300 ring-2 ring-blue-200' : 'border-gray-200'}`}>
+
                 <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-0 sm:mb-4">
+
                   <Upload className="w-6 h-6 text-blue-600" />
+
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2 hidden sm:block">Upload Resume</h3>
                 <p className="text-sm text-gray-600 hidden sm:block">Upload your current resume or paste the text</p>
+
               </div>
 
+
+
               <div className={`bg-green-50 rounded-xl p-2 border flex-none w-24 h-28 flex flex-col items-center justify-center
+
                           sm:flex-1 sm:p-6 sm:w-auto sm:h-auto ${currentStep === 2 ? 'border-green-300 ring-2 ring-green-200' : 'border-gray-200'}`}>
+
                 <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-0 sm:mb-4">
+
                   <Briefcase className="w-6 h-6 text-green-600" />
+
                 </div>
+
                 <h3 className="text-lg font-semibold text-gray-900 mb-2 hidden sm:block">Add Job Details</h3>
+
                 <p className="text-sm text-gray-600 hidden sm:block">Paste the job description you're targeting</p>
+
               </div>
+
               <div className={`bg-purple-50 rounded-xl p-2 border flex-none w-24 h-28 flex flex-col items-center justify-center
+
                           sm:flex-1 sm:p-6 sm:w-auto sm:h-auto ${currentStep === 3 ? 'border-purple-300 ring-2 ring-purple-200' : 'border-gray-200'}`}>
+
                 <div className="bg-purple-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-0 sm:mb-4">
+
                   <Sparkles className="w-6 h-6 text-purple-600" />
+
                 </div>
+
                 <h3 className="text-lg font-semibold text-gray-900 mb-2 hidden sm:block">AI Optimization</h3>
+
                 <p className="text-sm text-gray-600 hidden sm:block">Get your optimized resume in seconds</p>
+
               </div>
-            </div> */}
+
+            </div>
+
 
 
             <div className="max-w-7xl mx-auto space-y-6">
@@ -1181,7 +1207,7 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
 
             {optimizedResume && activeTab === 'analysis' && (
               <>
-
+                
                 <ComprehensiveAnalysis
                   beforeScore={beforeScore}
                   afterScore={afterScore}
@@ -1196,7 +1222,7 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
 
 
             {/* Project Analysis Button - This remains, but outside the tabbed content */}
-
+            
 
           </div>
 
