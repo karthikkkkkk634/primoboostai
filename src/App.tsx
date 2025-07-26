@@ -68,7 +68,7 @@ function App() {
         setShowMobileMenu(false);
       }
     };
-    
+
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -128,9 +128,9 @@ function App() {
                   className="flex items-center space-x-2 sm:space-x-3 hover:opacity-80 transition-opacity"
                 >
                   <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl overflow-hidden shadow-lg">
-                    <img 
-                      src={logoImage} 
-                      alt="PrimoBoost AI Logo" 
+                    <img
+                      src={logoImage}
+                      alt="PrimoBoost AI Logo"
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -138,11 +138,11 @@ function App() {
                     <h1 className="text-lg sm:text-xl font-bold text-secondary-900">PrimoBoost AI</h1>
                   </div>
                 </button>
-                
+
                 <div className="hidden md:block">
                   <Navigation currentPage={currentPage} onPageChange={setCurrentPage} />
                 </div>
-                
+
                 {/* Mobile Menu Button */}
                 <button
                   onClick={handleMobileMenuToggle}
@@ -156,25 +156,25 @@ function App() {
           {renderCurrentPage(isAuthenticated)} {/* Pass isAuthenticated to renderCurrentPage */}
         </>
       )}
-      
+
       {/* Mobile Bottom Navigation */}
       <MobileNavBar currentPage={currentPage} onPageChange={handlePageChange} />
-      
+
       {/* Mobile Menu Overlay */}
       {showMobileMenu && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div 
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm" 
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => setShowMobileMenu(false)}
           />
           <div className="fixed top-0 right-0 h-full w-80 max-w-[90vw] bg-white shadow-2xl overflow-y-auto safe-area">
-            <div className="flex flex-col space-y-6">
+            <div className="flex flex-col space-y-4 p-4"> {/* Changed space-y-6 to space-y-4 and added p-4 */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2 sm:space-x-3">
                   <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl overflow-hidden shadow-lg">
-                    <img 
-                      src={logoImage} 
-                      alt="PrimoBoost AI Logo" 
+                    <img
+                      src={logoImage}
+                      alt="PrimoBoost AI Logo"
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -187,8 +187,8 @@ function App() {
                   <X className="w-6 h-6" />
                 </button>
               </div>
-              
-              <div className="border-t border-secondary-200 pt-6">
+
+              <div className="border-t border-secondary-200 pt-4"> {/* Changed pt-6 to pt-4 */}
                 <nav className="flex flex-col space-y-4">
                   {[
                     { id: 'home', label: 'Home', icon: <Home className="w-5 h-5" /> },
@@ -214,17 +214,17 @@ function App() {
                   ))}
                 </nav>
               </div>
-              
+
               {/* Authentication Section */}
-              <div className="border-t border-secondary-200 pt-6">
-                <AuthButtons 
-                  onPageChange={setCurrentPage} 
+              <div className="border-t border-secondary-200 pt-4"> {/* Changed pt-6 to pt-4 */}
+                <AuthButtons
+                  onPageChange={setCurrentPage}
                   onClose={() => setShowMobileMenu(false)}
                   onShowAuth={handleShowAuth}
                 />
               </div>
-              
-              <div className="mt-auto pt-6 border-t border-secondary-200">
+
+              <div className="mt-auto pt-4 border-t border-secondary-200"> {/* Changed pt-6 to pt-4 */}
                 <div className="bg-gradient-to-r from-primary-50 to-accent-50 rounded-xl p-4">
                   <p className="text-sm text-secondary-700 mb-2">
                     Need help with your resume?
@@ -257,8 +257,8 @@ function App() {
 }
 
 // Authentication Buttons Component
-const AuthButtons: React.FC<{ 
-  onPageChange: (page: string) => void; 
+const AuthButtons: React.FC<{
+  onPageChange: (page: string) => void;
   onClose: () => void;
   onShowAuth: () => void;
 }> = ({ onPageChange, onClose, onShowAuth }) => {
