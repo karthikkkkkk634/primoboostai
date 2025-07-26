@@ -139,15 +139,32 @@ export const Header: React.FC<HeaderProps> = ({
                         </div>
                       </div>
 
-                        onClick={() => {
-                          setShowDeviceManagement(true);
-                          setShowUserMenu(false);
-                        }}
-                        className="w-full text-left px-4 py-3 text-sm text-secondary-700 hover:bg-secondary-50 transition-colors flex items-center space-x-3 min-h-touch"
-                      >
-                        <Shield className="w-4 h-4" />
-                        <span>Device & Security</span>
-                      </button>
+                      {/* Wrap these buttons in a Fragment */}
+                      <>
+                        {/* Profile Settings Option */}
+                        <button
+                          onClick={() => {
+                            setShowProfileManagement(true);
+                            setShowUserMenu(false);
+                          }}
+                          className="w-full text-left px-4 py-3 text-sm text-secondary-700 hover:bg-secondary-50 transition-colors flex items-center space-x-3 min-h-touch"
+                        >
+                          <User className="w-4 h-4" />
+                          <span>Profile Settings</span>
+                        </button>
+
+                        {/* Device Management Option */}
+                        <button
+                          onClick={() => {
+                            setShowDeviceManagement(true);
+                            setShowUserMenu(false);
+                          }}
+                          className="w-full text-left px-4 py-3 text-sm text-secondary-700 hover:bg-secondary-50 transition-colors flex items-center space-x-3 min-h-touch"
+                        >
+                          <Shield className="w-4 h-4" />
+                          <span>Device & Security</span>
+                        </button>
+                      </> {/* End Fragment */}
 
                       <button
                         onClick={handleLogout}
