@@ -27,3 +27,29 @@ Example components/pages to include:
 - Markdown or rich text renderer (optional for blog/case studies)
 
 No setup code or create-react-app needed — only the JSX/Tailwind component code as output.
+
+You are building features for an application called PrimoBoost AI, an AI-powered resume optimizer.
+
+Here is the knowledge of what’s already built:
+
+Resume upload (text or PDF)
+
+Job description input
+
+LinkedIn and GitHub links (optional)
+
+Target role input (optional)
+
+Step-by-step flow for fresher & experienced users
+
+ATS scoring and optimization analysis
+
+Resume preview panel
+
+PDF export
+
+Mobile responsive UI
+
+Built using React, Tailwind CSS, TypeScript
+
+Think and build future features based on this foundation.
