@@ -1719,4 +1719,4 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
 
 
 
-export default ResumeOptimizer;I have successfully removed the redundant three-icon display element from `src/components/ResumeOptimizer.tsx`. This streamlines the initial view, as the `InputWizard` component now handles the step-by-step visualizati
+export default ResumeOptimizer;
