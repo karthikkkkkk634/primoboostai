@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { 
-  Upload, 
-  FileText, 
-  User, 
-  Briefcase, 
-  ArrowLeft, 
-  ArrowRight, 
+import {
+  Upload,
+  FileText,
+  User,
+  Briefcase,
+  ArrowLeft,
+  ArrowRight,
   Sparkles,
   CheckCircle,
   Clock,
@@ -234,7 +234,7 @@ export const InputWizard: React.FC<InputWizardProps> = ({
                 </div>
               </div>
             </div>
-            
+
             <button
               onClick={isAuthenticated ? handleOptimize : onShowAuth}
               disabled={!resumeText.trim() || !jobDescription.trim()}
@@ -285,7 +285,7 @@ export const InputWizard: React.FC<InputWizardProps> = ({
             Step {currentStep + 1} of {steps.length}
           </div>
         </div>
-        
+
         {/* Step Progress Bar */}
         <div className="flex items-center space-x-4 mb-6">
           {steps.map((step, index) => (
@@ -329,11 +329,11 @@ export const InputWizard: React.FC<InputWizardProps> = ({
 
       {/* Navigation Buttons */}
       <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center gap-2"> {/* Added gap-2 here */}
           <button
             onClick={handlePrevious}
             disabled={currentStep === 0}
-            className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
+            className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 w-1/3 sm:w-auto flex-shrink-0 ${ // Modified width and added flex-shrink-0
               currentStep === 0
                 ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                 : 'bg-gray-600 hover:bg-gray-700 text-white shadow-lg hover:shadow-xl'
@@ -343,9 +343,9 @@ export const InputWizard: React.FC<InputWizardProps> = ({
             <span>Previous</span>
           </button>
 
-          <div className="text-center">
+          <div className="text-center w-1/3 sm:w-48 flex-shrink-0"> {/* Modified width and added flex-shrink-0 */}
             <div className="text-sm text-gray-500 mb-1">Progress</div>
-            <div className="w-48 bg-gray-200 rounded-full h-2">
+            <div className="w-full bg-gray-200 rounded-full h-2"> {/* Changed w-48 to w-full to make it responsive within its 1/3 width */}
               <div
                 className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
                 style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
@@ -357,7 +357,7 @@ export const InputWizard: React.FC<InputWizardProps> = ({
             <button
               onClick={handleNext}
               disabled={!currentStepData.isValid}
-              className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
+              className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 w-1/3 sm:w-auto flex-shrink-0 ${ // Modified width and added flex-shrink-0
                 !currentStepData.isValid
                   ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                   : 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl'
@@ -367,7 +367,7 @@ export const InputWizard: React.FC<InputWizardProps> = ({
               <ArrowRight className="w-5 h-5" />
             </button>
           ) : (
-            <div className="w-24" /> // Placeholder to maintain layout
+            <div className="w-1/3 sm:w-24 flex-shrink-0" /> // Modified width and added flex-shrink-0
           )}
         </div>
       </div>
