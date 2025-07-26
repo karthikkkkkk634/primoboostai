@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 // CORRECTED IMPORT STATEMENT:
 // This line now includes all previously imported Lucide icons PLUS ArrowLeft, FileText, BarChart3, SwitchHorizontal, and Sparkles.
-import { FileText, Sparkles, Download, TrendingUp, Target, Award, User, Briefcase, AlertCircle, CheckCircle, Loader2, RefreshCw, Zap, Plus, Eye, EyeOff, Crown, Calendar, Clock, Users, Star, ArrowRight, Shield, Settings, LogOut, Menu, X, Upload, BarChart3, Lightbulb, ArrowLeft, SwitchHorizontal } from 'lucide-react';
+import { FileText, Sparkles, Download, TrendingUp, Target, Award, User, Briefcase, AlertCircle, CheckCircle, Loader2, RefreshCw, Zap, Plus, Eye, EyeOff, Crown, Calendar, Clock, Users, Star, ArrowRight, Shield, Settings, LogOut, Menu, X, Upload, BarChart3, Lightbulb, ArrowLeft, StretchHorizontal as SwitchHorizontal } from 'lucide-react';
 
 import { FileUpload } from './FileUpload';
 
@@ -1105,8 +1105,23 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
 
               </div>
 
+              <div className={`bg-purple-50 rounded-xl p-2 border flex-none w-24 h-28 flex flex-col items-center justify-center
 
-            )}
+                          sm:flex-1 sm:p-6 sm:w-auto sm:h-auto ${currentStep === 3 ? 'border-purple-300 ring-2 ring-purple-200' : 'border-gray-200'}`}>
+
+                <div className="bg-purple-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-0 sm:mb-4">
+
+                  <Sparkles className="w-6 h-6 text-purple-600" />
+
+                </div>
+
+                <h3 className="text-lg font-semibold text-gray-900 mb-2 hidden sm:block">AI Optimization</h3>
+
+                <p className="text-sm text-gray-600 hidden sm:block">Get your optimized resume in seconds</p>
+
+              </div>
+
+            </div>
 
 
 
@@ -1128,6 +1143,7 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
               isAuthenticated={isAuthenticated}
               onShowAuth={onShowAuth}
             />
+            </div>
 
           </>
 
