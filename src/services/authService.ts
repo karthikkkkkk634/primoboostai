@@ -146,6 +146,9 @@ class AuthService {
             id: refreshedSession.user.id,
             name: profile?.full_name || refreshedSession.user.email?.split('@')[0] || 'User',
             email: refreshedSession.user.email!,
+            phone: profile?.phone || undefined,
+            linkedin: profile?.linkedin_profile || undefined,
+            github: profile?.wellfound_profile || undefined,
             isVerified: refreshedSession.user.email_confirmed_at !== null,
             createdAt: refreshedSession.user.created_at || new Date().toISOString(),
             lastLogin: new Date().toISOString(),
@@ -174,6 +177,15 @@ class AuthService {
         id: session.user.id,
         name: profile?.full_name || session.user.email?.split('@')[0] || 'User',
         email: session.user.email!,
+        phone: profile?.phone || undefined,
+        linkedin: profile?.linkedin_profile || undefined,
+        github: profile?.wellfound_profile || undefined,
+        phone: profile?.phone || undefined,
+        linkedin: profile?.linkedin_profile || undefined,
+        github: profile?.wellfound_profile || undefined,
+        phone: profile?.phone || undefined,
+        linkedin: profile?.linkedin_profile || undefined,
+        github: profile?.wellfound_profile || undefined,
         isVerified: session.user.email_confirmed_at !== null,
         createdAt: session.user.created_at || new Date().toISOString(),
         lastLogin: new Date().toISOString(),
@@ -224,7 +236,11 @@ class AuthService {
 
   private async getUserProfile(userId: string): Promise<{ full_name: string } | null> {
     try {
-      const { data, error } = await supabase.from('user_profiles').select('full_name').eq('id', userId).maybeSingle();
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('full_name, phone, linkedin_profile, wellfound_profile')
+        .eq('id', userId)
+        .maybeSingle();
       if (error) {
         console.error('Error fetching user profile:', error);
         return null;
@@ -233,6 +249,33 @@ class AuthService {
     } catch (error) {
       console.error('Error in getUserProfile:', error);
       return null;
+    }
+  }
+
+  // Update user profile
+  async updateUserProfile(userId: string, updates: {
+    full_name?: string;
+    email_address?: string;
+    phone?: string;
+    linkedin_profile?: string;
+    wellfound_profile?: string;
+  }): Promise<void> {
+    try {
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({
+          ...updates,
+          profile_updated_at: new Date().toISOString()
+        })
+        .eq('id', userId);
+
+      if (error) {
+        console.error('Error updating user profile:', error);
+        throw new Error('Failed to update profile');
+      }
+    } catch (error) {
+      console.error('Error in updateUserProfile:', error);
+      throw error;
     }
   }
 

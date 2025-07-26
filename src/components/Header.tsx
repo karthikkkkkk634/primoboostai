@@ -3,6 +3,7 @@ import { FileText, User, LogOut, Menu, X, Loader2, Sparkles, Shield, Settings } 
 import { useAuth } from '../contexts/AuthContext';
 import { AuthModal } from './auth/AuthModal';
 import { DeviceManagement } from './security/DeviceManagement';
+import { UserProfileManagement } from './UserProfileManagement';
 
 
 interface HeaderProps {
@@ -20,6 +21,7 @@ export const Header: React.FC<HeaderProps> = ({
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showDeviceManagement, setShowDeviceManagement] = useState(false);
+  const [showProfileManagement, setShowProfileManagement] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
@@ -139,6 +141,18 @@ export const Header: React.FC<HeaderProps> = ({
                       
                       {/* Device Management Option */}
                       <button
+                  {/* Profile Settings Option */}
+                  <button
+                    onClick={() => {
+                      setShowProfileManagement(true);
+                      setShowUserMenu(false);
+                    }}
+                    className="w-full text-left px-4 py-3 text-sm text-secondary-700 hover:bg-secondary-50 transition-colors flex items-center space-x-3 min-h-touch"
+                  >
+                    <User className="w-4 h-4" />
+                    <span>Profile Settings</span>
+                  </button>
+                  
                         onClick={() => {
                           setShowDeviceManagement(true);
                           setShowUserMenu(false);
@@ -223,6 +237,14 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Profile Management Modal */}
+      {showProfileManagement && (
+        <UserProfileManagement
+          isOpen={showProfileManagement}
+          onClose={() => setShowProfileManagement(false)}
+        />
       )}
     </>
   );

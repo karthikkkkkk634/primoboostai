@@ -10,6 +10,7 @@ interface AuthContextType extends AuthState {
   forgotPassword: (data: ForgotPasswordData) => Promise<void>;
   resetPassword: (newPassword: string) => Promise<void>;
   refreshSession: () => Promise<void>;
+  revalidateUserSession: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -226,6 +227,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     await authService.resetPassword(newPassword);
   };
 
+  const revalidateUserSession = async () => {
+    try {
+      const user = await authService.getCurrentUser();
+      setAuthState(prev => ({
+        ...prev,
+        user,
+        isAuthenticated: !!user,
+      }));
+    } catch (error) {
+      console.error('Error revalidating user session:', error);
+    }
+  };
+
   const value: AuthContextType = {
     ...authState,
     login,
@@ -234,6 +248,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     forgotPassword,
     resetPassword,
     refreshSession,
+    revalidateUserSession,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -72,8 +72,6 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
 
   const [githubUrl, setGithubUrl] = useState('');
 
-  const [targetRole, setTargetRole] = useState('');
-
   const [userType, setUserType] = useState<UserType>('fresher');
 
   const [optimizedResume, setOptimizedResume] = useState<ResumeData | null>(null);
@@ -146,8 +144,6 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
     setOptimizedResume(null);
     setResumeText('');
     setJobDescription('');
-    setLinkedinUrl('');
-    setGithubUrl('');
     setTargetRole('');
     setUserType('fresher'); // Reset userType as well
     setBeforeScore(null);
@@ -278,7 +274,19 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
 
     try {
 
-      const parsedResume = await optimizeResume(resumeText, jobDescription, userType, linkedinUrl, githubUrl, targetRole);
+      const parsedResume = await optimizeResume(
+        resumeText, 
+        jobDescription, 
+        userType,
+        user.name,
+        user.email,
+        user.phone,
+        user.linkedin,
+        user.github,
+        undefined, // linkedinUrl (deprecated)
+        undefined, // githubUrl (deprecated)
+        targetRole
+      );
 
       setParsedResumeData(parsedResume);
 
@@ -490,8 +498,13 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
         userType,
 
         linkedinUrl,
-
-        githubUrl,
+        user.name,
+        user.email,
+        user.phone,
+        user.linkedin,
+        user.github,
+        undefined, // linkedinUrl (deprecated)
+        undefined, // githubUrl (deprecated)
 
         targetRole
 
@@ -1078,10 +1091,6 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
               setResumeText={setResumeText}
               jobDescription={jobDescription}
               setJobDescription={setJobDescription}
-              linkedinUrl={linkedinUrl}
-              setLinkedinUrl={setLinkedinUrl}
-              githubUrl={githubUrl}
-              setGithubUrl={setGithubUrl}
               targetRole={targetRole}
               setTargetRole={setTargetRole}
               userType={userType}

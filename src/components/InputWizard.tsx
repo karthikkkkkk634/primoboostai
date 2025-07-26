@@ -20,10 +20,6 @@ interface InputWizardProps {
   setResumeText: (value: string) => void;
   jobDescription: string;
   setJobDescription: (value: string) => void;
-  linkedinUrl: string;
-  setLinkedinUrl: (value: string) => void;
-  githubUrl: string;
-  setGithubUrl: (value: string) => void;
   targetRole: string;
   setTargetRole: (value: string) => void;
   userType: UserType;
@@ -38,10 +34,6 @@ export const InputWizard: React.FC<InputWizardProps> = ({
   setResumeText,
   jobDescription,
   setJobDescription,
-  linkedinUrl,
-  setLinkedinUrl,
-  githubUrl,
-  setGithubUrl,
   targetRole,
   setTargetRole,
   userType,
@@ -90,58 +82,39 @@ export const InputWizard: React.FC<InputWizardProps> = ({
     },
     {
       id: 'social',
-      title: 'Social Links',
+      title: 'Target Role',
       icon: <User className="w-6 h-6" />,
       component: (
         <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
           <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
             <User className="w-5 h-5 mr-2 text-purple-600" />
-            Social Links & Target Role (Optional)
+            Target Role (Optional)
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium text-gray-800 mb-3">Social Profiles</h3>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  LinkedIn Profile URL
-                </label>
-                <input
-                  type="url"
-                  value={linkedinUrl}
-                  onChange={(e) => setLinkedinUrl(e.target.value)}
-                  placeholder="https://linkedin.com/in/yourprofile"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  GitHub Profile URL
-                </label>
-                <input
-                  type="url"
-                  value={githubUrl}
-                  onChange={(e) => setGithubUrl(e.target.value)}
-                  placeholder="https://github.com/yourusername"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                />
-              </div>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Role Title
+              </label>
+              <input
+                type="text"
+                value={targetRole}
+                onChange={(e) => setTargetRole(e.target.value)}
+                placeholder="e.g., Senior Software Engineer, Product Manager..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              />
+              <p className="text-xs text-gray-500 mt-2">
+                Specify the exact role title for more targeted project recommendations
+              </p>
             </div>
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium text-gray-800 mb-3">Target Role</h3>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Role Title
-                </label>
-                <input
-                  type="text"
-                  value={targetRole}
-                  onChange={(e) => setTargetRole(e.target.value)}
-                  placeholder="e.g., Senior Software Engineer, Product Manager..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                />
-                <p className="text-xs text-gray-500 mt-2">
-                  Specify the exact role title for more targeted project recommendations
-                </p>
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+              <div className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                <div className="text-sm text-blue-800">
+                  <p className="font-medium mb-1">📝 Profile Information</p>
+                  <p className="text-blue-700">
+                    Your name, email, phone, LinkedIn, and GitHub details will be automatically populated from your profile settings. You can update these in your profile settings from the user menu.
+                  </p>
+                </div>
               </div>
             </div>
           </div>

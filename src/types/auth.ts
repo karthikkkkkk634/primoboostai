@@ -2,6 +2,9 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  phone?: string;
+  linkedin?: string;
+  github?: string;
   isVerified: boolean;
   createdAt: string;
   lastLogin: string;

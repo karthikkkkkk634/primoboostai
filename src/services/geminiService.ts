@@ -6,6 +6,11 @@ export const optimizeResume = async (
   resume: string, 
   jobDescription: string, 
   userType: UserType,
+  userName?: string,
+  userEmail?: string,
+  userPhone?: string,
+  userLinkedin?: string,
+  userGithub?: string,
   linkedinUrl?: string, 
   githubUrl?: string,
   targetRole?: string
@@ -124,11 +129,11 @@ Rules:
 
 JSON Structure:
 {
-  "name": "",
-  "phone": "",
-  "email": "",
-  "linkedin": "",
-  "github": "",
+  "name": "${userName || ''}",
+  "phone": "${userPhone || ''}",
+  "email": "${userEmail || ''}",
+  "linkedin": "${userLinkedin || linkedinUrl || ''}",
+  "github": "${userGithub || githubUrl || ''}",
   "targetRole": "",
   ${userType === 'experienced' ? '"summary": "",' : '"summary": "",'}
   "education": [
@@ -281,8 +286,11 @@ GitHub URL provided: ${githubUrl || 'NONE - leave empty'}`;
       }
 
       // CRITICAL: Only use provided social links - empty string if not provided
-      parsedResult.linkedin = linkedinUrl || "";
-      parsedResult.github = githubUrl || "";
+      parsedResult.name = userName || parsedResult.name || "";
+      parsedResult.email = userEmail || parsedResult.email || "";
+      parsedResult.phone = userPhone || parsedResult.phone || "";
+      parsedResult.linkedin = userLinkedin || linkedinUrl || "";
+      parsedResult.github = userGithub || githubUrl || "";
       
       return parsedResult;
     } catch (parseError) {
