@@ -1,15 +1,21 @@
 import React from 'react';
 import { ResumeData, UserType } from '../types/resume';
+import { ExportOptions } from '../types/export';
 
 interface ResumePreviewProps {
   resumeData: ResumeData;
   userType?: UserType;
+  exportOptions?: ExportOptions;
 }
 
-export const ResumePreview: React.FC<ResumePreviewProps> = ({ resumeData, userType = 'experienced' }) => {
+export const ResumePreview: React.FC<ResumePreviewProps> = ({
+  resumeData,
+  userType = 'experienced',
+  exportOptions
+}) => {
   // Debug logging to check what data we're receiving
   console.log('ResumePreview received data:', resumeData);
-  
+
   // Add validation to ensure we have valid resume data
   if (!resumeData) {
     return (
@@ -35,62 +41,84 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ resumeData, userTy
   }
 
   // --- Moved style constants here (top of component function body) ---
+  // Helper function to convert mm to px (1mm = 3.779528px at 96 DPI)
+  const mmToPx = (mm: number) => mm * 3.779528;
+
+  // Helper function to convert pt to px (1pt = 1.333px at 96 DPI)
+  const ptToPx = (pt: number) => pt * 1.333;
+
   const sectionTitleStyle: React.CSSProperties = {
-    fontSize: '10pt', // Corresponds to PDF_CONFIG.fonts.sectionTitle.size
+    fontSize: exportOptions ? `${ptToPx(exportOptions.sectionHeaderSize)}px` : '13.33px', // Default 10pt converted to px
     fontWeight: 'bold',
-    marginBottom: '4pt', // Corresponds to PDF_CONFIG.spacing.sectionSpacingAfter (after underline)
-    marginTop: '10pt',  // Corresponds to PDF_CONFIG.spacing.sectionSpacingBefore
-    fontFamily: 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
+    marginBottom: exportOptions ? `${mmToPx(exportOptions.sectionSpacing * 0.4)}px` : '5.33px',
+    marginTop: exportOptions ? `${mmToPx(exportOptions.sectionSpacing)}px` : '11.34px',
+    fontFamily: exportOptions ? `${exportOptions.fontFamily}, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif` : 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
     letterSpacing: '0.5pt',
     textTransform: 'uppercase'
-  };
+  } as const;
 
   const sectionUnderlineStyle: React.CSSProperties = {
     borderBottomWidth: '0.5pt',
-    borderColor: '#808080', // PDF_CONFIG.colors.secondary converted to hex or RGB
-    marginBottom: '4pt', // Corresponds to PDF_CONFIG.spacing.sectionSpacingAfter
-    height: '1px' // Ensure line height
+    borderColor: '#404040',
+    height: '1px',
+    marginBottom: exportOptions ? `${mmToPx(exportOptions.sectionSpacing * 0.6)}px` : '8px'
   };
 
   const bodyTextStyle: React.CSSProperties = {
-    fontSize: '9.5pt', // Corresponds to PDF_CONFIG.fonts.body.size
-    lineHeight: '1.25', // Corresponds to PDF_CONFIG.spacing.lineHeight
-    fontFamily: 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
-    color: '#000' // PDF_CONFIG.colors.primary
+    fontSize: exportOptions ? `${ptToPx(exportOptions.bodyTextSize)}px` : '12.67px',
+    fontFamily: exportOptions ? `${exportOptions.fontFamily}, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif` : 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
+    lineHeight: '1.25'
   };
-  // --- End of moved style constants ---
 
-
-  // Build contact info on a single line with | separator and correct font sizes
+  // Build contact information with proper separators
   const buildContactInfo = () => {
     const parts: React.ReactNode[] = [];
 
-    // Add location first if available
-    if (resumeData.location) {
-      parts.push(<span key="location">{resumeData.location}</span>);
-    }
-    
-    if (resumeData.phone) {
-      parts.push(<a key="phone" href={`tel:${resumeData.phone}`} className="text-blue-600 hover:text-blue-800 transition-colors">{resumeData.phone}</a>);
-    }
-    
     if (resumeData.email) {
-      parts.push(<a key="email" href={`mailto:${resumeData.email}`} className="text-blue-600 hover:text-blue-800 transition-colors">{resumeData.email}</a>);
+      parts.push(
+        <span key="email" style={{ fontSize: exportOptions ? `${ptToPx(exportOptions.bodyTextSize - 0.5)}px` : '12px' }}>
+          {resumeData.email}
+        </span>
+      );
     }
-    
+
+    if (resumeData.phone) {
+      parts.push(
+        <span key="phone" style={{ fontSize: exportOptions ? `${ptToPx(exportOptions.bodyTextSize - 0.5)}px` : '12px' }}>
+          {resumeData.phone}
+        </span>
+      );
+    }
+
+    if (resumeData.location) {
+      parts.push(
+        <span key="location" style={{ fontSize: exportOptions ? `${ptToPx(exportOptions.bodyTextSize - 0.5)}px` : '12px' }}>
+          {resumeData.location}
+        </span>
+      );
+    }
+
     if (resumeData.linkedin) {
-      parts.push(<a key="linkedin" href={resumeData.linkedin} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 transition-colors">{resumeData.linkedin}</a>);
+      parts.push(
+        <span key="linkedin" style={{ fontSize: exportOptions ? `${ptToPx(exportOptions.bodyTextSize - 0.5)}px` : '12px' }}>
+          {resumeData.linkedin}
+        </span>
+      );
     }
-    
+
     if (resumeData.github) {
-      parts.push(<a key="github" href={resumeData.github} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 transition-colors">{resumeData.github}</a>);
+      parts.push(
+        <span key="github" style={{ fontSize: exportOptions ? `${ptToPx(exportOptions.bodyTextSize - 0.5)}px` : '12px' }}>
+          {resumeData.github}
+        </span>
+      );
     }
 
     // Join with | separator
     return parts.map((part, index) => (
       <React.Fragment key={index}>
         {part}
-        {index < parts.length - 1 && <span className="mx-1" style={{ fontSize: '10pt' }}>|</span>}
+        {index < parts.length - 1 && <span className="mx-1" style={{ fontSize: exportOptions ? `${ptToPx(exportOptions.bodyTextSize)}px` : '13.33px' }}>|</span>}
       </React.Fragment>
     ));
   };
@@ -108,15 +136,15 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ resumeData, userTy
         'certifications',
         'education'
       ];
-    } else { // Fresher
+    } else { // Fresher or Student
       return [
-        'summary', // Optional for freshers
-        'education', // Prominent for freshers
+        'summary', // This 'summary' case will now handle both professional summary and career objective
+        'education', // Prominent for freshers/students
         'workExperience', // Internships & Work Experience
         'projects', // Academic projects
         'skills',
         'certifications',
-        'achievementsAndExtras' // Combined section for fresher extras
+        'achievementsAndExtras' // Combined section for fresher/student extras
       ];
     }
   };
@@ -129,48 +157,73 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ resumeData, userTy
 
     switch (sectionName) {
       case 'summary':
-        if (!resumeData.summary || resumeData.summary.trim() === '') return null;
-        return (
-          <div style={{ marginBottom: '12pt' /* Equivalent to afterSubsection or spacing after section */ }}>
-            <h2 style={sectionTitleStyle}>
-              PROFESSIONAL SUMMARY
-            </h2>
-            <div style={sectionUnderlineStyle}></div>
-            <p style={{ ...bodyTextStyle, marginBottom: '6pt' }}>
-              {resumeData.summary}
-            </p>
-          </div>
-        );
+        // Conditional logic for 'Professional Summary' or 'Career Objective'
+        if (userType === 'student') {
+          if (!resumeData.careerObjective || resumeData.careerObjective.trim() === '') return null;
+          return (
+            <div style={{ marginBottom: exportOptions ? `${mmToPx(exportOptions.sectionSpacing * 0.5)}px` : '16px' }}>
+              <h2 style={sectionTitleStyle}>
+                CAREER OBJECTIVE
+              </h2>
+              <div style={sectionUnderlineStyle}></div>
+              <p style={{ ...bodyTextStyle, marginBottom: exportOptions ? `${mmToPx(exportOptions.entrySpacing)}px` : '7.56px' }}>
+                {resumeData.careerObjective}
+              </p>
+            </div>
+          );
+        } else { // 'experienced' or 'fresher'
+          if (!resumeData.summary || resumeData.summary.trim() === '') return null;
+          return (
+            <div style={{ marginBottom: exportOptions ? `${mmToPx(exportOptions.sectionSpacing * 0.5)}px` : '16px' }}>
+              <h2 style={sectionTitleStyle}>
+                PROFESSIONAL SUMMARY
+              </h2>
+              <div style={sectionUnderlineStyle}></div>
+              <p style={{ ...bodyTextStyle, marginBottom: exportOptions ? `${mmToPx(exportOptions.entrySpacing)}px` : '7.56px' }}>
+                {resumeData.summary}
+              </p>
+            </div>
+          );
+        }
 
       case 'workExperience':
         if (!resumeData.workExperience || resumeData.workExperience.length === 0) return null;
         return (
-          <div style={{ marginBottom: '12pt' }}>
+          <div style={{ marginBottom: exportOptions ? `${mmToPx(exportOptions.sectionSpacing * 0.5)}px` : '16px' }}>
             <h2 style={sectionTitleStyle}>
               {userType === 'fresher' ? 'WORK EXPERIENCE' : 'EXPERIENCE'}
             </h2>
             <div style={sectionUnderlineStyle}></div>
-            
+
             {resumeData.workExperience.map((job, index) => (
-              <div key={index} style={{ marginBottom: '4pt' /* Corresponds to PDF_CONFIG.spacing.afterSubsection for jobs */ }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2pt' }}>
+              <div key={index} style={{ marginBottom: exportOptions ? `${mmToPx(exportOptions.entrySpacing * 2)}px` : '15.12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: exportOptions ? `${mmToPx(exportOptions.entrySpacing * 0.5)}px` : '3.78px' }}>
                   <div>
-                    <div style={{ fontSize: '9.5pt', fontWeight: 'bold', fontFamily: 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif' }}>
+                    <div style={{
+                      fontSize: exportOptions ? `${ptToPx(exportOptions.subHeaderSize)}px` : '12.67px',
+                      fontWeight: 'bold',
+                      fontFamily: exportOptions ? `${exportOptions.fontFamily}, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif` : 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif'
+                    }}>
                       {job.role}
                     </div>
-                    <div style={{ fontSize: '9.5pt', fontFamily: 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif' }}>
+                    <div style={{
+                      fontSize: exportOptions ? `${ptToPx(exportOptions.subHeaderSize)}px` : '12.67px',
+                      fontFamily: exportOptions ? `${exportOptions.fontFamily}, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif` : 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif'
+                    }}>
                       {job.company}{job.location ? `, ${job.location}` : ''} {/* Add location */}
                     </div>
                   </div>
-                  <div style={{ fontSize: '9.5pt', fontFamily: 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif' }}>
+                  <div style={{
+                    fontSize: exportOptions ? `${ptToPx(exportOptions.subHeaderSize)}px` : '12.67px',
+                    fontFamily: exportOptions ? `${exportOptions.fontFamily}, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif` : 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif'
+                  }}>
                     {job.year}
                   </div>
                 </div>
                 {job.bullets && job.bullets.length > 0 && (
-                  <ul style={{ marginLeft: '12pt' /* PDF_CONFIG.spacing.bulletIndent */, listStyleType: 'disc' }}>
+                  <ul style={{ marginLeft: exportOptions ? `${mmToPx(exportOptions.entrySpacing * 2)}px` : '15.12px', listStyleType: 'disc' }}>
                     {job.bullets.map((bullet, bulletIndex) => (
-                      <li key={bulletIndex} style={{ ...bodyTextStyle, marginBottom: '1pt' /* Small space between bullets */ }}>
-                        {/* FIX APPLIED HERE */}
+                      <li key={bulletIndex} style={{ ...bodyTextStyle, marginBottom: exportOptions ? `${mmToPx(exportOptions.entrySpacing * 0.25)}px` : '1.89px' }}>
                         {typeof bullet === 'string' ? bullet : (bullet as any).description || JSON.stringify(bullet)}
                       </li>
                     ))}
@@ -184,34 +237,52 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ resumeData, userTy
       case 'education':
         if (!resumeData.education || resumeData.education.length === 0) return null;
         return (
-          <div style={{ marginBottom: '12pt' }}>
+          <div style={{ marginBottom: exportOptions ? `${mmToPx(exportOptions.sectionSpacing * 0.5)}px` : '16px' }}>
             <h2 style={sectionTitleStyle}>
               EDUCATION
             </h2>
             <div style={sectionUnderlineStyle}></div>
-            
+
             {resumeData.education.map((edu, index) => (
-              <div key={index} style={{ marginBottom: '4pt' /* Corresponds to PDF_CONFIG.spacing.afterSubsection */ }}>
+              <div key={index} style={{ marginBottom: exportOptions ? `${mmToPx(exportOptions.entrySpacing * 2)}px` : '15.12px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div>
-                    <div style={{ fontSize: '9.5pt', fontWeight: 'bold', fontFamily: 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif' }}>
+                    <div style={{
+                      fontSize: exportOptions ? `${ptToPx(exportOptions.subHeaderSize)}px` : '12.67px',
+                      fontWeight: 'bold',
+                      fontFamily: exportOptions ? `${exportOptions.fontFamily}, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif` : 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif'
+                    }}>
                       {edu.degree}
                     </div>
-                    <div style={{ fontSize: '9.5pt', fontFamily: 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif' }}>
-                      {edu.school}{edu.location ? `, ${edu.location}` : ''} {/* Add location for education */}
+                    <div style={{
+                      fontSize: exportOptions ? `${ptToPx(exportOptions.subHeaderSize)}px` : '12.67px',
+                      fontFamily: exportOptions ? `${exportOptions.fontFamily}, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif` : 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif'
+                    }}>
+                      {edu.school}{edu.location ? `, ${edu.location}` : ''}
                     </div>
                     {edu.cgpa && (
-                      <div style={{ fontSize: '9.5pt', fontFamily: 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif', color: '#4B5563' /* Secondary color */ }}>
+                      <div style={{
+                        fontSize: exportOptions ? `${ptToPx(exportOptions.bodyTextSize)}px` : '12.67px',
+                        fontFamily: exportOptions ? `${exportOptions.fontFamily}, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif` : 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
+                        color: '#4B5563'
+                      }}>
                         CGPA: {edu.cgpa}
                       </div>
                     )}
                     {edu.relevantCoursework && edu.relevantCoursework.length > 0 && (
-                        <div style={{ fontSize: '9.5pt', fontFamily: 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif', color: '#4B5563' }}>
-                            Relevant Coursework: {edu.relevantCoursework.join(', ')}
+                        <div style={{
+                          fontSize: exportOptions ? `${ptToPx(exportOptions.bodyTextSize)}px` : '12.67px',
+                          fontFamily: exportOptions ? `${exportOptions.fontFamily}, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif` : 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
+                          color: '#4B5563'
+                        }}>
+                          Relevant Coursework: {edu.relevantCoursework.join(', ')}
                         </div>
                     )}
                   </div>
-                  <div style={{ fontSize: '9.5pt', fontFamily: 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif' }}>
+                  <div style={{
+                    fontSize: exportOptions ? `${ptToPx(exportOptions.subHeaderSize)}px` : '12.67px',
+                    fontFamily: exportOptions ? `${exportOptions.fontFamily}, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif` : 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif'
+                  }}>
                     {edu.year}
                   </div>
                 </div>
@@ -223,22 +294,26 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ resumeData, userTy
       case 'projects':
         if (!resumeData.projects || resumeData.projects.length === 0) return null;
         return (
-          <div style={{ marginBottom: '12pt' }}>
+          <div style={{ marginBottom: exportOptions ? `${mmToPx(exportOptions.sectionSpacing * 0.5)}px` : '16px' }}>
             <h2 style={sectionTitleStyle}>
               {userType === 'fresher' ? 'ACADEMIC PROJECTS' : 'PROJECTS'}
             </h2>
             <div style={sectionUnderlineStyle}></div>
-            
+
             {resumeData.projects.map((project, index) => (
-              <div key={index} style={{ marginBottom: '4pt' /* Corresponds to PDF_CONFIG.spacing.afterSubsection */ }}>
-                <div style={{ fontSize: '9.5pt', fontWeight: 'bold', fontFamily: 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif', marginBottom: '2pt' }}>
+              <div key={index} style={{ marginBottom: exportOptions ? `${mmToPx(exportOptions.entrySpacing * 2)}px` : '15.12px' }}>
+                <div style={{
+                  fontSize: exportOptions ? `${ptToPx(exportOptions.subHeaderSize)}px` : '12.67px',
+                  fontWeight: 'bold',
+                  fontFamily: exportOptions ? `${exportOptions.fontFamily}, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif` : 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
+                  marginBottom: exportOptions ? `${mmToPx(exportOptions.entrySpacing * 0.5)}px` : '3.78px'
+                }}>
                   {project.title}
                 </div>
                 {project.bullets && project.bullets.length > 0 && (
-                  <ul style={{ marginLeft: '12pt' /* PDF_CONFIG.spacing.bulletIndent */, listStyleType: 'disc' }}>
+                  <ul style={{ marginLeft: exportOptions ? `${mmToPx(exportOptions.entrySpacing * 2)}px` : '15.12px', listStyleType: 'disc' }}>
                     {project.bullets.map((bullet, bulletIndex) => (
-                      <li key={bulletIndex} style={{ ...bodyTextStyle, marginBottom: '1pt' }}>
-                        {/* FIX APPLIED HERE */}
+                      <li key={bulletIndex} style={{ ...bodyTextStyle, marginBottom: exportOptions ? `${mmToPx(exportOptions.entrySpacing * 0.25)}px` : '1.89px' }}>
                         {typeof bullet === 'string' ? bullet : (bullet as any).description || JSON.stringify(bullet)}
                       </li>
                     ))}
@@ -252,15 +327,18 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ resumeData, userTy
       case 'skills':
         if (!resumeData.skills || resumeData.skills.length === 0) return null;
         return (
-          <div style={{ marginBottom: '12pt' }}>
+          <div style={{ marginBottom: exportOptions ? `${mmToPx(exportOptions.sectionSpacing * 0.5)}px` : '16px' }}>
             <h2 style={sectionTitleStyle}>
-              TECHNICAL SKILLS
+              {userType === 'student' ? 'SKILLS' : 'TECHNICAL SKILLS'}
             </h2>
             <div style={sectionUnderlineStyle}></div>
-            
+
             {resumeData.skills.map((skill, index) => (
-              <div key={index} style={{ marginBottom: '2pt' /* Small space between skills */ }}>
-                <span style={{ fontSize: '9.5pt', fontFamily: 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif' }}>
+              <div key={index} style={{ marginBottom: exportOptions ? `${mmToPx(exportOptions.entrySpacing * 0.5)}px` : '3.78px' }}>
+                <span style={{
+                  fontSize: exportOptions ? `${ptToPx(exportOptions.bodyTextSize)}px` : '12.67px',
+                  fontFamily: exportOptions ? `${exportOptions.fontFamily}, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif` : 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif'
+                }}>
                   <strong style={{ fontWeight: 'bold' }}>• {skill.category}:</strong>{' '}
                   {skill.list && skill.list.join(', ')}
                 </span>
@@ -272,13 +350,13 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ resumeData, userTy
       case 'certifications':
         if (!resumeData.certifications || resumeData.certifications.length === 0) return null;
         return (
-          <div style={{ marginBottom: '12pt' }}>
+          <div style={{ marginBottom: exportOptions ? `${mmToPx(exportOptions.sectionSpacing * 0.5)}px` : '16px' }}>
             <h2 style={sectionTitleStyle}>
               CERTIFICATIONS
             </h2>
             <div style={sectionUnderlineStyle}></div>
-            
-            <ul style={{ marginLeft: '12pt' /* PDF_CONFIG.spacing.bulletIndent */, listStyleType: 'disc' }}>
+
+            <ul style={{ marginLeft: exportOptions ? `${mmToPx(exportOptions.entrySpacing * 2)}px` : '15.12px', listStyleType: 'disc' }}>
               {resumeData.certifications.map((cert, index) => {
                 let certText = '';
                 if (typeof cert === 'string') {
@@ -300,9 +378,9 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ resumeData, userTy
                 } else {
                   certText = String(cert);
                 }
-                
+
                 return (
-                  <li key={index} style={{ ...bodyTextStyle, marginBottom: '1pt' }}>
+                  <li key={index} style={{ ...bodyTextStyle, marginBottom: exportOptions ? `${mmToPx(exportOptions.entrySpacing * 0.25)}px` : '1.89px' }}>
                     {certText}
                   </li>
                 );
@@ -310,7 +388,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ resumeData, userTy
             </ul>
           </div>
         );
-      
+
       case 'achievementsAndExtras': // Combined section for freshers
         const hasAchievements = resumeData.achievements && resumeData.achievements.length > 0;
         const hasExtraCurricular = resumeData.extraCurricularActivities && resumeData.extraCurricularActivities.length > 0;
@@ -320,46 +398,46 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ resumeData, userTy
         if (!hasAchievements && !hasExtraCurricular && !hasLanguages && !hasPersonalDetails) return null;
 
         return (
-          <div style={{ marginBottom: '12pt' }}>
+          <div style={{ marginBottom: exportOptions ? `${mmToPx(exportOptions.sectionSpacing * 0.5)}px` : '16px' }}>
             <h2 style={sectionTitleStyle}>
               ACHIEVEMENTS & EXTRAS
             </h2>
             <div style={sectionUnderlineStyle}></div>
 
             {hasAchievements && (
-              <div style={{ marginBottom: '4pt' }}>
-                <p style={{ ...bodyTextStyle, fontWeight: 'bold', marginBottom: '2pt' }}>Achievements:</p>
-                <ul style={{ marginLeft: '18pt', listStyleType: 'disc' }}>
+              <div style={{ marginBottom: exportOptions ? `${mmToPx(exportOptions.entrySpacing)}px` : '7.56px' }}>
+                <p style={{ ...bodyTextStyle, fontWeight: 'bold', marginBottom: exportOptions ? `${mmToPx(exportOptions.entrySpacing * 0.5)}px` : '3.78px' }}>Achievements:</p>
+                <ul style={{ marginLeft: exportOptions ? `${mmToPx(exportOptions.entrySpacing * 3)}px` : '22.68px', listStyleType: 'disc' }}>
                   {resumeData.achievements!.map((item, index) => (
-                    <li key={index} style={{ ...bodyTextStyle, marginBottom: '1pt' }}>{item}</li>
+                    <li key={index} style={{ ...bodyTextStyle, marginBottom: exportOptions ? `${mmToPx(exportOptions.entrySpacing * 0.25)}px` : '1.89px' }}>{item}</li>
                   ))}
                 </ul>
               </div>
             )}
             {hasExtraCurricular && (
-              <div style={{ marginBottom: '4pt' }}>
-                <p style={{ ...bodyTextStyle, fontWeight: 'bold', marginBottom: '2pt' }}>Extra-curricular Activities:</p>
-                <ul style={{ marginLeft: '18pt', listStyleType: 'disc' }}>
+              <div style={{ marginBottom: exportOptions ? `${mmToPx(exportOptions.entrySpacing)}px` : '7.56px' }}>
+                <p style={{ ...bodyTextStyle, fontWeight: 'bold', marginBottom: exportOptions ? `${mmToPx(exportOptions.entrySpacing * 0.5)}px` : '3.78px' }}>Extra-curricular Activities:</p>
+                <ul style={{ marginLeft: exportOptions ? `${mmToPx(exportOptions.entrySpacing * 3)}px` : '22.68px', listStyleType: 'disc' }}>
                   {resumeData.extraCurricularActivities!.map((item, index) => (
-                    <li key={index} style={{ ...bodyTextStyle, marginBottom: '1pt' }}>{item}</li>
+                    <li key={index} style={{ ...bodyTextStyle, marginBottom: exportOptions ? `${mmToPx(exportOptions.entrySpacing * 0.25)}px` : '1.89px' }}>{item}</li>
                   ))}
                 </ul>
               </div>
             )}
             {hasLanguages && (
-              <div style={{ marginBottom: '4pt' }}>
-                <p style={{ ...bodyTextStyle, fontWeight: 'bold', marginBottom: '2pt' }}>Languages Known:</p>
-                <ul style={{ marginLeft: '18pt', listStyleType: 'disc' }}>
+              <div style={{ marginBottom: exportOptions ? `${mmToPx(exportOptions.entrySpacing)}px` : '7.56px' }}>
+                <p style={{ ...bodyTextStyle, fontWeight: 'bold', marginBottom: exportOptions ? `${mmToPx(exportOptions.entrySpacing * 0.5)}px` : '3.78px' }}>Languages Known:</p>
+                <ul style={{ marginLeft: exportOptions ? `${mmToPx(exportOptions.entrySpacing * 3)}px` : '22.68px', listStyleType: 'disc' }}>
                   {resumeData.languagesKnown!.map((item, index) => (
-                    <li key={index} style={{ ...bodyTextStyle, marginBottom: '1pt' }}>{item}</li>
+                    <li key={index} style={{ ...bodyTextStyle, marginBottom: exportOptions ? `${mmToPx(exportOptions.entrySpacing * 0.25)}px` : '1.89px' }}>{item}</li>
                   ))}
                 </ul>
               </div>
             )}
             {hasPersonalDetails && (
-              <div style={{ marginBottom: '4pt' }}>
-                <p style={{ ...bodyTextStyle, fontWeight: 'bold', marginBottom: '2pt' }}>Personal Details:</p>
-                <p style={{ ...bodyTextStyle, marginLeft: '18pt' }}>{resumeData.personalDetails}</p>
+              <div style={{ marginBottom: exportOptions ? `${mmToPx(exportOptions.entrySpacing)}px` : '7.56px' }}>
+                <p style={{ ...bodyTextStyle, fontWeight: 'bold', marginBottom: exportOptions ? `${mmToPx(exportOptions.entrySpacing * 0.5)}px` : '3.78px' }}>Personal Details:</p>
+                <p style={{ ...bodyTextStyle, marginLeft: exportOptions ? `${mmToPx(exportOptions.entrySpacing * 3)}px` : '22.68px' }}>{resumeData.personalDetails}</p>
               </div>
             )}
           </div>
@@ -372,46 +450,46 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ resumeData, userTy
 
   return (
     <div className="card">
-      <div 
-        className="pt-4 px-4 pb-6 sm:pt-6 sm:px-6 sm:pb-8 lg:px-8 max-h-[70vh] sm:max-h-[80vh] lg:max-h-[800px] overflow-y-auto" 
-        style={{ 
-          fontFamily: 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif', 
-          fontSize: '9.5pt', /* PDF_CONFIG.fonts.body.size */
+      <div
+        className="pt-4 px-4 pb-6 sm:pt-6 sm:px-6 sm:pb-8 lg:px-8 max-h-[70vh] sm:max-h-[80vh] lg:max-h-[800px] overflow-y-auto"
+        style={{
+          fontFamily: exportOptions ? `${exportOptions.fontFamily}, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif` : 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
+          fontSize: exportOptions ? `${ptToPx(exportOptions.bodyTextSize)}px` : '12.67px',
           lineHeight: '1.25', /* PDF_CONFIG.spacing.lineHeight */
           color: '#000',
-          padding: '15pt' /* Mimic PDF margins around content */
+          padding: exportOptions?.template === 'compact' ? '8px' : '15px' /* Adjust padding based on template */
         }}
       >
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '18pt' /* Spacing after contact line */ }}>
-          <h1 style={{ 
-            fontSize: '18pt', /* PDF_CONFIG.fonts.name.size */
-            fontWeight: 'bold', 
+          <h1 style={{
+            fontSize: exportOptions ? `${ptToPx(exportOptions.nameSize)}px` : '24px', /* Default 18pt converted to px */
+            fontWeight: 'bold',
             letterSpacing: '1pt',
-            marginBottom: '4pt', /* PDF_CONFIG.spacing.afterName */
-            fontFamily: 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
+            marginBottom: exportOptions ? `${mmToPx(exportOptions.sectionSpacing * 0.4)}px` : '5.33px',
+            fontFamily: exportOptions ? `${exportOptions.fontFamily}, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif` : 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
             textTransform: 'uppercase'
           }}>
             {resumeData.name}
           </h1>
-          
+
           {/* Contact Information */}
           {contactElements.length > 0 && (
-            <div style={{ 
-              fontSize: '9pt', /* PDF_CONFIG.fonts.contact.size */
-              fontFamily: 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
-              marginBottom: '6pt', /* PDF_CONFIG.spacing.afterContact */
-              display: 'flex', 
-              justifyContent: 'center', 
-              alignItems: 'center', 
-              flexWrap: 'wrap' 
+            <div style={{
+              fontSize: exportOptions ? `${ptToPx(exportOptions.bodyTextSize - 0.5)}px` : '12px', /* Contact size is slightly smaller */
+              fontFamily: exportOptions ? `${exportOptions.fontFamily}, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif` : 'Calibri, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
+              marginBottom: exportOptions ? `${mmToPx(exportOptions.sectionSpacing * 0.6)}px` : '8px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              flexWrap: 'wrap'
             }}>
               {contactElements}
             </div>
           )}
-          
+
           {/* Horizontal line under contact info */}
-          <div style={{ 
+          <div style={{
             borderBottomWidth: '0.5pt', /* PDF_CONFIG line width */
             borderColor: '#404040', /* PDF_CONFIG color */
             height: '1px', /* Ensure line is visible */
@@ -422,7 +500,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ resumeData, userTy
 
         {/* Dynamic sections based on user type */}
         {sectionOrder.map((sectionName) => renderSection(sectionName))}
-        
+
         {/* The GitHub References Section has been removed as per requirement. */}
       </div>
     </div>
