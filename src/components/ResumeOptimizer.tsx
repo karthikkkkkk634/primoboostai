@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 
 // CORRECTED IMPORT STATEMENT:
 // This line now includes all previously imported Lucide icons PLUS ArrowLeft, FileText, BarChart3, SwitchHorizontal, and Sparkles.
-import { FileText, Sparkles, Download, TrendingUp, Target, Award, User, Briefcase, AlertCircle, CheckCircle, Loader2, RefreshCw, Zap, Plus, Eye, EyeOff, Crown, Calendar, Clock, Users, Star, ArrowRight, Shield, Settings, LogOut, Menu, X, Upload, BarChart3, Lightbulb, ArrowLeft, StretchHorizontal as SwitchHorizontal } from 'lucide-react';
+// Added ChevronUp and ChevronDown
+import { FileText, Sparkles, Download, TrendingUp, Target, Award, User, Briefcase, AlertCircle, CheckCircle, Loader2, RefreshCw, Zap, Plus, Eye, EyeOff, Crown, Calendar, Clock, Users, Star, ArrowRight, Shield, Settings, LogOut, Menu, X, Upload, BarChart3, Lightbulb, ArrowLeft, StretchHorizontal as SwitchHorizontal, ChevronUp, ChevronDown } from 'lucide-react';
 
 import { FileUpload } from './FileUpload';
 
@@ -22,7 +23,7 @@ import { ProjectEnhancement } from './ProjectEnhancement';
 
 import { SubscriptionPlans } from './payment/SubscriptionPlans';
 
-import { SubscriptionStatus } from './payment/SubscriptionStatus';
+import { SubscriptionStatus } from './payment/SubscriptionStatus'; // Ensure this is imported
 
 import { MissingSectionsModal } from './MissingSectionsModal';
 import { InputWizard } from './InputWizard';
@@ -46,34 +47,25 @@ import { ResumeData, UserType, MatchScore, DetailedScore } from '../types/resume
 
 
 interface ResumeOptimizerProps {
-
   isAuthenticated: boolean;
-
   onShowAuth: () => void;
-
+  onShowProfile: (mode?: 'profile' | 'wallet') => void; // Added onShowProfile prop with optional mode
 }
 
 
 const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
-
   isAuthenticated,
-
-  onShowAuth
-
+  onShowAuth,
+  onShowProfile // Destructure onShowProfile
 }) => {
-
   const { user } = useAuth();
-
   const [resumeText, setResumeText] = useState('');
-
   const [jobDescription, setJobDescription] = useState('');
-
+  // Re-typed the targetRole state declaration
+  const [targetRole, setTargetRole] = useState('');
   const [linkedinUrl, setLinkedinUrl] = useState('');
-
   const [githubUrl, setGithubUrl] = useState('');
-
   const [userType, setUserType] = useState<UserType>('fresher');
-
   const [optimizedResume, setOptimizedResume] = useState<ResumeData | null>(null);
   const [activeTab, setActiveTab] = useState<'resume' | 'analysis'>('resume'); // NEW: Added activeTab state
 
@@ -94,17 +86,11 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
   const [parsedResumeData, setParsedResumeData] = useState<ResumeData | null>(null);
 
   const [manualProject, setManualProject] = useState({
-
     title: '',
-
     startDate: '',
-
     endDate: '',
-
     techStack: [] as string[],
-
     oneLiner: ''
-
   });
 
   const [newTechStack, setNewTechStack] = useState('');
@@ -119,13 +105,15 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
 
   const [showProjectEnhancement, setShowProjectEnhancement] = useState(false);
 
-  const [showSubscriptionPlans, setShowSubscriptionPlans] = useState(false);
+  const [showSubscriptionPlans, setShowSubscriptionPlans] = useState(false); // State to control SubscriptionPlans visibility
 
   const [showProjectAnalysis, setShowProjectAnalysis] = useState(false);
 
   const [subscription, setSubscription] = useState<any>(null);
 
   const [loadingSubscription, setLoadingSubscription] = useState(true);
+  // New state for dropdown
+  const [showOptimizationDropdown, setShowOptimizationDropdown] = useState(false);
 
   const [currentStep, setCurrentStep] = useState(1);
   const [showMissingSectionsModal, setShowMissingSectionsModal] = useState(false);
@@ -138,13 +126,16 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
 
   const [isCalculatingScore, setIsCalculatingScore] = useState(false);
 
+  // NEW: State for wallet refresh key
+  const [walletRefreshKey, setWalletRefreshKey] = useState(0);
+
 
   // NEW: handleStartNewResume function
   const handleStartNewResume = () => {
     setOptimizedResume(null);
     setResumeText('');
     setJobDescription('');
-    setTargetRole('');
+    setTargetRole(''); // Reset targetRole as well
     setUserType('fresher'); // Reset userType as well
     setBeforeScore(null);
     setAfterScore(null);
@@ -157,6 +148,7 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
     setChangedSections([]);
     setCurrentStep(1);
     setActiveTab('resume'); // Reset active tab to resume when starting new
+    setShowOptimizationDropdown(false); // Close dropdown on new resume
   };
 
 
@@ -245,7 +237,6 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
       alert('User information not available. Please sign in again.');
 
       return;
-
     }
 
     if (!subscription) {
@@ -275,8 +266,8 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
     try {
 
       const parsedResume = await optimizeResume(
-        resumeText, 
-        jobDescription, 
+        resumeText,
+        jobDescription,
         userType,
         user.name,
         user.email,
@@ -310,11 +301,15 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
       await continueOptimizationProcess(parsedResume);
 
 
-    } catch (error) {
+    } catch (error: any) { // Explicitly type error as any or Error
 
       console.error('Error optimizing resume:', error);
 
-      alert('Failed to optimize resume. Please try again.');
+      if (error.message && (error.message.includes('429') || error.message.includes('Too Many Requests'))) {
+        alert('Too many requests. Please wait a moment and try again.');
+      } else {
+        alert('Failed to optimize resume. Please try again.');
+      }
 
     } finally {
 
@@ -350,7 +345,7 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
 
       setIsCalculatingScore(true);
 
-      const initialScore = await getDetailedResumeScore(resumeData, jobDescription);
+      const initialScore = await getDetailedResumeScore(resumeData, jobDescription, setIsCalculatingScore);
 
       setInitialResumeScore(initialScore);
 
@@ -488,45 +483,39 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
     try {
 
       console.log('Starting final AI optimization pass...');
-
       const finalOptimizedResume = await optimizeResume(
-
-        JSON.stringify(resumeData),
-
-        jobDescription,
-
-        userType,
-
-        linkedinUrl,
-        user.name,
-        user.email,
-        user.phone,
-        user.linkedin,
-        user.github,
+        JSON.stringify(resumeData), // 1. resume content (stringified ResumeData)
+        jobDescription,            // 2. jobDescription
+        userType,                  // 3. userType
+        user.name,                 // 4. userName
+        user.email,                // 5. userEmail
+        user.phone,                // 6. userPhone
+        user.linkedin,             // 7. userLinkedin
+        user.github,               // 8. userGithub
         undefined, // linkedinUrl (deprecated)
         undefined, // githubUrl (deprecated)
-
         targetRole
-
       );
 
 
-      let finalResumeData = finalOptimizedResume;
+      // Add targetRole to the final optimized resume data
+      let finalResumeData = {
+        ...finalOptimizedResume,
+        targetRole: targetRole || ''
+      };
 
 
       if (finalOptimizedResume.projects && finalOptimizedResume.projects.length > 0) {
 
         try {
 
-          const projectAnalysis = await advancedProjectAnalyzer.analyzeAndReplaceProjects(
+        const projectAnalysis = await advancedProjectAnalyzer.analyzeAndReplaceProjects(
+          finalOptimizedResume,
+          targetRole || 'Software Engineer',
+          jobDescription,
+          setIsCalculatingScore // Pass the setLoading callback
+        );
 
-            finalOptimizedResume,
-
-            targetRole || 'Software Engineer',
-
-            jobDescription
-
-          );
 
 
           const suitableProjects = finalOptimizedResume.projects?.filter(project => {
@@ -603,7 +592,8 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
       setAfterScore(afterScoreData);
 
 
-      const finalScore = await getDetailedResumeScore(finalResumeData, jobDescription);
+      const finalScore = await getDetailedResumeScore(finalResumeData, jobDescription, setIsCalculatingScore);
+
 
       setFinalResumeScore(finalScore);
 
@@ -730,9 +720,7 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
       ...prev,
 
       techStack: prev.techStack.filter(t => t !== tech)
-
     }));
-
   };
 
 
@@ -890,9 +878,10 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
 
 
   const handleSubscriptionSuccess = () => {
-
     checkSubscriptionStatus();
-
+    setShowSubscriptionPlans(false); // Close the modal on success
+    // NEW: Increment walletRefreshKey to trigger refresh in UserProfileManagement
+    setWalletRefreshKey(prevKey => prevKey + 1);
   };
 
 
@@ -987,9 +976,6 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
   ];
 
 
-
-
-
   if (showMobileInterface && optimizedResume) {
 
     return <MobileOptimizedInterface sections={mobileSections} />;
@@ -1052,13 +1038,9 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
               <div className="w-20 h-20 rounded-full overflow-hidden shadow-lg mx-auto mb-4">
 
                 <img
-
                   src="https://res.cloudinary.com/dlkovvlud/image/upload/w_1000,c_fill,ar_1:1,g_auto,r_max,bo_5px_solid_red,b_rgb:262c35/v1751536902/a-modern-logo-design-featuring-primoboos_XhhkS8E_Q5iOwxbAXB4CqQ_HnpCsJn4S1yrhb826jmMDw_nmycqj.jpg"
-
                   alt="PrimoBoost AI Logo"
-
                   className="w-full h-full object-cover"
-
                 />
 
               </div>
@@ -1078,9 +1060,59 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
                 Powered by Advanced AI Technology
 
               </div>
-
             </div>
 
+            {/* Optimization Status Dropdown (only visible before optimization) */}
+            {isAuthenticated && !loadingSubscription && (
+              <div className="relative text-center mb-8 z-10"> {/* Added z-10 for dropdown stacking */}
+                <button
+                  onClick={() => setShowOptimizationDropdown(!showOptimizationDropdown)}
+                  className="inline-flex items-center space-x-2 px-6 py-3 rounded-full transition-all duration-200 font-semibold text-sm
+                                  bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500
+                                  max-w-[300px] mx-auto justify-center"
+                >
+                  <span>
+                    {subscription
+                      ? `Optimizations Left: ${subscription.optimizationsTotal - subscription.optimizationsUsed}`
+                      : 'No Active Plan'}
+                  </span>
+                  {showOptimizationDropdown ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                </button>
+
+                {showOptimizationDropdown && (
+                  <div className="absolute left-1/2 -translate-x-1/2 mt-3 w-72 bg-white rounded-xl shadow-xl border border-secondary-200 py-3 z-20">
+                    {subscription ? (
+                      <div className="text-center px-4">
+                        <p className="text-sm text-secondary-700 mb-3">
+                          You have **{subscription.optimizationsTotal - subscription.optimizationsUsed}** optimizations remaining.
+                        </p>
+                        <button
+                          onClick={() => { setShowSubscriptionPlans(true); setShowOptimizationDropdown(false); }}
+                          className="w-full btn-secondary py-2 px-4 rounded-lg text-sm flex items-center justify-center space-x-2"
+                        >
+                          <Zap className="w-4 h-4" />
+                          <span>Upgrade Plan</span>
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="text-center px-4">
+                        <p className="text-sm text-secondary-700 mb-3">
+                          You currently do not have an active subscription plan.
+                        </p>
+                        <button
+                          onClick={() => { setShowSubscriptionPlans(true); setShowOptimizationDropdown(false); }}
+                          className="w-full btn-primary py-2 px-4 rounded-lg text-sm flex items-center justify-center space-x-2"
+                        >
+                          <Crown className="w-4 h-4" />
+                          <span>Choose Your Plan</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+            {/* End Optimization Status Dropdown */}
 
             {/* Removed the redundant step icons div */}
 
@@ -1103,7 +1135,7 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
 
           </>
 
-        ) :  (
+        ) : (
 
           <div className="max-w-7xl mx-auto space-y-6">
             {/* NEW TABBED NAVIGATION AND CREATE NEW RESUME BUTTON */}
@@ -1157,7 +1189,14 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
                   </div>
                   <ResumePreview resumeData={optimizedResume} userType={userType} />
                 </div>
-               <ExportButtons resumeData={optimizedResume} userType={userType} targetRole={targetRole} />
+                {/* Pass onShowProfile and walletRefreshKey to ExportButtons */}
+                <ExportButtons
+                  resumeData={optimizedResume}
+                  userType={userType}
+                  targetRole={targetRole}
+                  onShowProfile={onShowProfile} // Pass the prop
+                  walletRefreshKey={walletRefreshKey} // Pass the state
+                />
               </>
             )}
 
@@ -1183,6 +1222,18 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
           </div>
 
         )}
+
+        {/* Start SubscriptionStatus integration */}
+        {isAuthenticated && !loadingSubscription && (
+          <div className="mt-8">
+            <SubscriptionStatus
+              subscription={subscription}
+              loading={loadingSubscription}
+              onUpgrade={() => setShowSubscriptionPlans(true)}
+            />
+          </div>
+        )}
+        {/* End SubscriptionStatus integration */}
 
       </div>
 
@@ -1421,27 +1472,16 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
                     />
 
                   </div>
-
                   <div>
-
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-
                       End Date *
-
                     </label>
-
                     <input
-
                       type="month"
-
                       value={manualProject.endDate}
-
                       onChange={(e) => setManualProject(prev => ({ ...prev, endDate: e.target.value }))}
-
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-
                     />
-
                   </div>
 
                 </div>
@@ -1596,7 +1636,7 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
 
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 backdrop-blur-sm">
 
-          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 text-center">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 text-center max-w-md w-full mx-4 text-center">
 
             <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
 
@@ -1649,73 +1689,43 @@ const ResumeOptimizer: React.FC<ResumeOptimizerProps> = ({
 
 
       <>
-
         <ProjectEnhancement
-
           isOpen={showProjectEnhancement}
-
           onClose={() => setShowProjectEnhancement(false)}
-
           currentResume={parsedResumeData || optimizedResume || { name: '', phone: '', email: '', linkedin: '', github: '', education: [], workExperience: [], projects: [], skills: [], certifications: [] }}
-
           jobDescription={jobDescription}
-
           onProjectsAdded={handleProjectsUpdated}
-
         />
-
-
 
         <ProjectAnalysisModal
-
           isOpen={showProjectAnalysis}
-
           onClose={() => setShowProjectAnalysis(false)}
-
           resumeData={parsedResumeData || optimizedResume || { name: '', phone: '', email: '', linkedin: '', github: '', education: [], workExperience: [], projects: [], skills: [], certifications: [] }}
-
           jobDescription={jobDescription}
-
           targetRole={targetRole}
-
           onProjectsUpdated={handleProjectsUpdated}
-
         />
 
-
-
-        <SubscriptionPlans
-
-          isOpen={showSubscriptionPlans}
-
-          onClose={() => setShowSubscriptionPlans(false)}
-
-          onSubscriptionSuccess={handleSubscriptionSuccess}
-
-        />
-
+        {/* This is the SubscriptionPlans component that previously had isOpen controlled directly */}
+        {showSubscriptionPlans && ( // Only render if showSubscriptionPlans is true
+          <SubscriptionPlans
+            isOpen={showSubscriptionPlans}
+            onNavigateBack={() => setShowSubscriptionPlans(false)}
+            onSubscriptionSuccess={handleSubscriptionSuccess}
+          />
+        )}
 
 
         <MissingSectionsModal
-
           isOpen={showMissingSectionsModal}
-
           onClose={() => {
-
             setShowMissingSectionsModal(false);
-
             setMissingSections([]);
-
             setPendingResumeData(null);
-
             setIsOptimizing(false);
-
           }}
-
           missingSections={missingSections}
-
           onSectionsProvided={handleMissingSectionsProvided}
-
         />
 
       </>
