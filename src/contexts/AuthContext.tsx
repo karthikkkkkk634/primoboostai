@@ -11,6 +11,7 @@ interface AuthContextType extends AuthState {
   resetPassword: (newPassword: string) => Promise<void>;
   refreshSession: () => Promise<void>;
   revalidateUserSession: () => Promise<void>;
+  markProfilePromptSeen: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -34,17 +35,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isLoading: true,
   });
 
-  const [logoutTimer, setLogoutTimer] = useState<NodeJS.Timeout | null>(null);
+  // Removed: const [logoutTimer, setLogoutTimer] = useState<NodeJS.Timeout | null>(null);
   const [sessionRefreshTimer, setSessionRefreshTimer] = useState<NodeJS.Timeout | null>(null);
 
-  const scheduleAutoLogout = () => {
-    if (logoutTimer) clearTimeout(logoutTimer);
-    const timer = setTimeout(() => {
-      logout();
-      console.log('🔒 Auto-logged out after 24 hours');
-    }, 24 * 60 * 60 * 1000); // 24 hours
-    setLogoutTimer(timer);
-  };
+  // Removed scheduleAutoLogout function definition entirely.
+  // const scheduleAutoLogout = () => {
+  //   if (logoutTimer) clearTimeout(logoutTimer);
+  //   const timer = setTimeout(() => {
+  //     logout();
+  //     console.log('🔒 Auto-logged out after 24 hours');
+  //   }, 24 * 60 * 60 * 1000); // 24 hours
+  //   setLogoutTimer(timer);
+  // };
 
   const scheduleSessionRefresh = () => {
     if (sessionRefreshTimer) clearTimeout(sessionRefreshTimer);
@@ -82,7 +84,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const getInitialSession = async () => {
       try {
         const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Initial load timeout')), 8000)
+          setTimeout(() => reject(new Error('Initial load timeout')), 45000)
         );
 
         const userPromise = authService.getCurrentUser();
@@ -95,7 +97,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             isLoading: false,
           });
           if (user) {
-            scheduleAutoLogout();
+            // Removed call to scheduleAutoLogout();
             scheduleSessionRefresh();
           }
           initialLoadComplete = true;
@@ -129,7 +131,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 isAuthenticated: !!user,
                 isLoading: false,
               });
-              scheduleAutoLogout();
+              // Removed call to scheduleAutoLogout();
               scheduleSessionRefresh();
             } catch (error) {
               console.error('Error getting user after sign in:', error);
@@ -145,7 +147,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               isAuthenticated: false,
               isLoading: false,
             });
-            if (logoutTimer) clearTimeout(logoutTimer);
+            // Removed: if (logoutTimer) clearTimeout(logoutTimer);
             if (sessionRefreshTimer) clearTimeout(sessionRefreshTimer);
           } else if (event === 'TOKEN_REFRESHED' && session?.user) {
             // Don't change loading state on token refresh, just log it
@@ -168,12 +170,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }));
         initialLoadComplete = true;
       }
-    }, 10000);
+    }, 50000);
 
     return () => {
       mounted = false;
       clearTimeout(fallbackTimeout);
-      if (logoutTimer) clearTimeout(logoutTimer);
+      // Removed: if (logoutTimer) clearTimeout(logoutTimer);
       if (sessionRefreshTimer) clearTimeout(sessionRefreshTimer);
       subscription.unsubscribe();
     };
@@ -209,7 +211,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
-      if (logoutTimer) clearTimeout(logoutTimer);
+      // Removed: if (logoutTimer) clearTimeout(logoutTimer);
       if (sessionRefreshTimer) clearTimeout(sessionRefreshTimer);
       setAuthState({
         user: null,
@@ -240,6 +242,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const markProfilePromptSeen = async () => {
+    if (!authState.user) return;
+    
+    try {
+      await authService.markProfilePromptSeen(authState.user.id);
+      // Update the user state to reflect the change
+      setAuthState(prev => ({
+        ...prev,
+        user: prev.user ? { ...prev.user, hasSeenProfilePrompt: true } : null
+      }));
+    } catch (error) {
+      console.error('Error marking profile prompt as seen:', error);
+    }
+  };
   const value: AuthContextType = {
     ...authState,
     login,
@@ -249,6 +265,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     resetPassword,
     refreshSession,
     revalidateUserSession,
+    markProfilePromptSeen,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
